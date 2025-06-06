@@ -3,3 +3,4 @@ docs/index.html
 .obsidian/
 ignored/
 *.rmf
+ai_chat_api.py

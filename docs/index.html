@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/themes/vue.min.css
   ">
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.8.0/gitalk.min.css">
+  <link rel="stylesheet" href="ai-assistant.css">
 </head>
 
 <body>
@@ -101,6 +102,118 @@
   <script src="libs/docsify-plugin-title.min.js"></script>
   <script src="libs/docsify-pagination.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.8.0/gitalk.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/common.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+  <!-- AI助手悬浮按钮 -->
+  <div id="ai-float-btn" class="ai-fab" title="AI助手" onclick="toggleChat()">
+    <svg width="56" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#5A87FF"/><path d="M7 10.5C7 9.11929 8.11929 8 9.5 8H14.5C15.8807 8 17 9.11929 17 10.5V13.5C17 14.8807 15.8807 16 14.5 16H9.5C8.11929 16 7 14.8807 7 13.5V10.5Z" fill="white"/><circle cx="9.5" cy="12" r="1" fill="#5A87FF"/><circle cx="12" cy="12" r="1" fill="#5A87FF"/><circle cx="14.5" cy="12" r="1" fill="#5A87FF"/></svg>
+  </div>
+  <!-- AI助手抽屉 -->
+  <div id="ai-chat-drawer" class="chat-drawer">
+    <div class="chat-header">
+      <span class="chat-title">AI 助手</span>
+      <button onclick="toggleChat()" class="close-btn" title="关闭">&times;</button>
+    </div>
+    <div id="chat-welcome" class="chat-welcome">
+      <div class="chat-welcome-title">欢迎使用AI助手</div>
+      <div class="chat-welcome-desc">你可以这样提问：</div>
+      <div class="suggestion-chips">
+        <span class="suggestion-chip" onclick="useSuggestion(this)">如何制作一个可破坏的门？</span>
+        <span class="suggestion-chip" onclick="useSuggestion(this)">如何优化地图光照？</span>
+      </div>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-area">
+      <textarea id="chat-input" class="chat-input" rows="1" placeholder="问我任何关于CS1.6地图制作的问题..." oninput="autoGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+      <button id="send-btn" onclick="sendMsg()" class="send-btn" disabled title="发送">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10L18 3L11 18L9 11L2 10Z" fill="white"/></svg>
+      </button>
+    </div>
+  </div>
+  <script>
+    // 自动textarea高度
+    function autoGrow(el) {
+      el.style.height = 'auto';
+      el.style.height = (el.scrollHeight) + 'px';
+      document.getElementById('send-btn').disabled = !el.value.trim();
+    }
+    // 切换抽屉
+    function toggleChat() {
+      const drawer = document.getElementById('ai-chat-drawer');
+      if(drawer.style.display === 'flex') {
+        drawer.style.display = 'none';
+      } else {
+        drawer.style.display = 'flex';
+        document.getElementById('chat-input').focus();
+      }
+    }
+    // 使用建议芯片
+    function useSuggestion(el) {
+      const input = document.getElementById('chat-input');
+      input.value = el.innerText;
+      autoGrow(input);
+      sendMsg();
+    }
+    // 发送消息
+    async function sendMsg() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      document.getElementById('chat-welcome').style.display = 'none';
+      appendMsg('me', msg);
+      input.value = '';
+      autoGrow(input);
+      document.getElementById('send-btn').disabled = true;
+      // 加载动画
+      const loadingId = appendMsg('ai', '<span class="typing"><span>.</span><span>.</span><span>.</span></span>', true);
+      // 调用后端API
+      const reply = await fetch('/api/ai_chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: msg })
+      });
+      const data = await reply.json();
+      removeMsg(loadingId);
+      appendMsg('ai', data.reply || '无回复内容');
+    }
+    // 渲染消息
+    let msgId = 0;
+    function appendMsg(role, text, isLoading) {
+      const chat = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'msg-row ' + (role === 'me' ? 'msg-me' : 'msg-ai');
+      div.id = 'msg-' + (++msgId);
+      let content;
+      if (role === 'ai') {
+        // 处理AI返回的JSON字符串
+        try {
+          const obj = typeof text === 'string' ? JSON.parse(text) : text;
+          text = obj.output || text;
+        } catch (e) {}
+        if(isLoading) {
+          content = `<div class="msg-bubble ai-bubble"><span class="typing"><span>.</span><span>.</span><span>.</span></span></div>`;
+        } else {
+          content = `<div class="msg-bubble ai-bubble">${marked.parse(text, {highlight: code => hljs.highlightAuto(code).value})}</div>`;
+        }
+      } else {
+        content = `<div class="msg-bubble me-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+      }
+      div.innerHTML = content;
+      chat.appendChild(div);
+      setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 0);
+      return div.id;
+    }
+    function removeMsg(id) {
+      const el = document.getElementById(id);
+      if(el) el.remove();
+    }
+    // 禁用发送按钮逻辑
+    document.addEventListener('DOMContentLoaded', function() {
+      const input = document.getElementById('chat-input');
+      document.getElementById('send-btn').disabled = !input.value.trim();
+    });
+  </script>
 </body>
 
 </html>
