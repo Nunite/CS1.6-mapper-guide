@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const adminRoutes = require('./admin-api');
 const axios = require('axios');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -40,25 +42,36 @@ app.post('/api/ai_chat', async (req, res) => {
       return res.status(400).json({ error: '没有输入内容' });
     }
     
-    // 直接调用Coze API
-    const cozeApiToken = "pat_SiF46NkhxcWDtLlAMXFcVrbMxczIwlC79ruTxQ8fiWIM0PtvC456RZ7vXyFQPI4m";
-    const workflowId = "7512711241362800674";
+    // 从环境变量中读取配置
+    const cozeApiToken = process.env.COZE_API_TOKEN;
+    const workflowId = process.env.COZE_WORKFLOW_ID;
     
-    const response = await axios.post('https://api-cn.coze.com/v1/workflow/run', {
+    if (!cozeApiToken || !workflowId) {
+      console.error('[AI聊天] 错误: 缺少 COZE_API_TOKEN 或 COZE_WORKFLOW_ID 环境变量');
+      return res.status(500).json({ error: '服务器配置错误' });
+    }
+
+    // 创建一个忽略SSL证书验证的https agent
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false
+    });
+
+    const response = await axios.post('https://api.coze.cn/v1/workflow/run', {
       workflow_id: workflowId,
       parameters: { input: userInput }
     }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${cozeApiToken}`
-      }
+      },
+      httpsAgent: httpsAgent // 在请求中使用这个agent
     });
     
     const reply = response.data.data || "无回复内容";
     res.json({ reply: reply });
     
   } catch (error) {
-    console.error('[AI聊天] 错误:', error.message);
+    console.error('[AI聊天] 发生错误，打印完整错误对象:', error);
     
     // 提供详细的错误信息
     if (error.response) {
@@ -77,6 +90,7 @@ app.post('/api/ai_chat', async (req, res) => {
         details: '无法连接到Coze API服务'
       });
     } else {
+      console.error('[AI聊天] 请求设置时出错:', error.message);
       res.status(500).json({
         error: 'AI服务调用失败',
         message: error.message

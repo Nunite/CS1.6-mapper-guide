@@ -5,3 +5,4 @@ ignored/
 *.rmf
 ai_chat_api.py
 node_modules/
+.env

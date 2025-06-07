@@ -234,18 +234,17 @@
       const loadingId = appendMsg('ai', '', true);
       
       try {
-        // 使用fetch API直接调用工作流
-        const response = await fetch('https://api.coze.cn/v1/workflow/run', {
+        // API请求将发送到同源的相对路径 /api/ai_chat
+        // 这将由我们的Express服务器(server.js)处理
+        const apiUrl = '/api/ai_chat';
+          
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer pat_SiF46NkhxcWDtLlAMXFcVrbMxczIwlC79ruTxQ8fiWIM0PtvC456RZ7vXyFQPI4m',
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            parameters: {
-              "input": msg
-            },
-            workflow_id: "7512711241362800674"
+            input: msg
           })
         });
 
@@ -258,24 +257,10 @@
         // 移除加载动画
         removeMsg(loadingId);
         
-        // 正确处理嵌套的JSON结构
-        let aiResponse = '';
-        if (data && data.data) {
-          try {
-            // 处理第一层数据
-            const innerData = JSON.parse(data.data);
-            if (innerData && innerData.output) {
-              aiResponse = innerData.output;
-              // 应用AI回复
-              appendMsg('ai', aiResponse);
-            } else {
-              appendMsg('ai', '抱歉，无法解析AI回复内容');
-            }
-          } catch (parseError) {
-            appendMsg('ai', '抱歉，无法解析AI回复格式');
-          }
+        // 处理后端返回的数据
+        if (data && data.reply) {
+          appendMsg('ai', data.reply);
         } else {
-          
           appendMsg('ai', '无法解析AI回复');
         }
 
