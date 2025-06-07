@@ -7,10 +7,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/themes/vue.min.css
-  ">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.8.0/gitalk.min.css">
+  <link rel="stylesheet" href="libs/docsify/4.13.0/themes/vue.min.css">
+  <link rel="stylesheet" href="libs/gitalk/1.8.0/gitalk.min.css">
   <link rel="stylesheet" href="ai-assistant.css">
+  <style>
+    /* 本地字体 */
+    @font-face {
+      font-family: 'Source Sans Pro';
+      font-style: normal;
+      font-weight: 400;
+      src: url('libs/fonts/sourcesanspro.woff2') format('woff2');
+    }
+  </style>
 </head>
 
 <body>
@@ -96,15 +104,16 @@
     }
   </script>
   <!-- Docsify v4 -->
-  <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/docsify.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/plugins/search.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/plugins/zoom-image.min.js"></script>
+  <script src="libs/docsify/4.13.0/docsify.min.js"></script>
+  <script src="libs/docsify/4.13.0/plugins/search.min.js"></script>
+  <script src="libs/docsify/4.13.0/plugins/zoom-image.min.js"></script>
   <script src="libs/docsify-plugin-title.min.js"></script>
   <script src="libs/docsify-pagination.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.8.0/gitalk.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/common.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+  <script src="libs/gitalk/1.8.0/gitalk.min.js"></script>
+  <script src="libs/marked/marked.min.js"></script>
+  <script src="libs/highlight.js/11.7.0/lib/common.min.js"></script>
+  <link rel="stylesheet" href="libs/highlight.js/11.7.0/styles/github.min.css">
+
   <!-- AI助手悬浮按钮 -->
   <div id="ai-float-btn" class="ai-fab" title="AI助手" onclick="toggleChat()">
     <svg width="56" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#5A87FF"/><path d="M7 10.5C7 9.11929 8.11929 8 9.5 8H14.5C15.8807 8 17 9.11929 17 10.5V13.5C17 14.8807 15.8807 16 14.5 16H9.5C8.11929 16 7 14.8807 7 13.5V10.5Z" fill="white"/><circle cx="9.5" cy="12" r="1" fill="#5A87FF"/><circle cx="12" cy="12" r="1" fill="#5A87FF"/><circle cx="14.5" cy="12" r="1" fill="#5A87FF"/></svg>
@@ -132,12 +141,66 @@
     </div>
   </div>
   <script>
+    // 消息计数器 - 确保在所有函数定义前声明
+    let msgId = 0;
+
+    // 渲染消息函数
+    function appendMsg(role, text, isLoading) {
+      const chat = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'msg-row ' + (role === 'me' ? 'msg-me' : 'msg-ai');
+      div.id = 'msg-' + (++msgId);
+      let content;
+      if (role === 'ai') {
+        // 处理AI返回的JSON字符串
+        try {
+          if (typeof text === 'string') {
+            // 尝试解析JSON
+            try {
+              const obj = JSON.parse(text);
+              if (obj && obj.output) {
+                text = obj.output;
+              }
+            } catch (e) {
+              // 不是有效的JSON，继续使用原始文本
+            }
+          }
+        } catch (e) {}
+
+        if(isLoading) {
+          content = `<div class="msg-bubble ai-bubble"><span class="typing"><span>.</span><span>.</span><span>.</span></span></div>`;
+        } else {
+          // 确保text是字符串
+          text = String(text || '');
+          
+          // 修复换行符
+          text = text.replace(/\\n/g, '\n');
+          
+          // 使用marked解析markdown
+          content = `<div class="msg-bubble ai-bubble">${marked.parse(text, {highlight: code => hljs.highlightAuto(code).value})}</div>`;
+        }
+      } else {
+        content = `<div class="msg-bubble me-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+      }
+      div.innerHTML = content;
+      chat.appendChild(div);
+      setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 0);
+      return div.id;
+    }
+
+    // 删除消息函数
+    function removeMsg(id) {
+      const el = document.getElementById(id);
+      if(el) el.remove();
+    }
+
     // 自动textarea高度
     function autoGrow(el) {
       el.style.height = 'auto';
       el.style.height = (el.scrollHeight) + 'px';
       document.getElementById('send-btn').disabled = !el.value.trim();
     }
+
     // 切换抽屉
     function toggleChat() {
       const drawer = document.getElementById('ai-chat-drawer');
@@ -148,6 +211,7 @@
         document.getElementById('chat-input').focus();
       }
     }
+
     // 使用建议芯片
     function useSuggestion(el) {
       const input = document.getElementById('chat-input');
@@ -155,6 +219,7 @@
       autoGrow(input);
       sendMsg();
     }
+
     // 发送消息
     async function sendMsg() {
       const input = document.getElementById('chat-input');
@@ -166,47 +231,61 @@
       autoGrow(input);
       document.getElementById('send-btn').disabled = true;
       // 加载动画
-      const loadingId = appendMsg('ai', '<span class="typing"><span>.</span><span>.</span><span>.</span></span>', true);
-      // 调用后端API
-      const reply = await fetch('/api/ai_chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: msg })
-      });
-      const data = await reply.json();
-      removeMsg(loadingId);
-      appendMsg('ai', data.reply || '无回复内容');
-    }
-    // 渲染消息
-    let msgId = 0;
-    function appendMsg(role, text, isLoading) {
-      const chat = document.getElementById('chat-messages');
-      const div = document.createElement('div');
-      div.className = 'msg-row ' + (role === 'me' ? 'msg-me' : 'msg-ai');
-      div.id = 'msg-' + (++msgId);
-      let content;
-      if (role === 'ai') {
-        // 处理AI返回的JSON字符串
-        try {
-          const obj = typeof text === 'string' ? JSON.parse(text) : text;
-          text = obj.output || text;
-        } catch (e) {}
-        if(isLoading) {
-          content = `<div class="msg-bubble ai-bubble"><span class="typing"><span>.</span><span>.</span><span>.</span></span></div>`;
-        } else {
-          content = `<div class="msg-bubble ai-bubble">${marked.parse(text, {highlight: code => hljs.highlightAuto(code).value})}</div>`;
+      const loadingId = appendMsg('ai', '', true);
+      
+      try {
+        // 使用fetch API直接调用工作流
+        const response = await fetch('https://api.coze.cn/v1/workflow/run', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer pat_SiF46NkhxcWDtLlAMXFcVrbMxczIwlC79ruTxQ8fiWIM0PtvC456RZ7vXyFQPI4m',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            parameters: {
+              "input": msg
+            },
+            workflow_id: "7512711241362800674"
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API请求失败: ${response.status}`);
         }
-      } else {
-        content = `<div class="msg-bubble me-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+
+        const data = await response.json();
+        
+        // 移除加载动画
+        removeMsg(loadingId);
+        
+        // 正确处理嵌套的JSON结构
+        let aiResponse = '';
+        if (data && data.data) {
+          try {
+            // 处理第一层数据
+            const innerData = JSON.parse(data.data);
+            if (innerData && innerData.output) {
+              aiResponse = innerData.output;
+              // 应用AI回复
+              appendMsg('ai', aiResponse);
+            } else {
+              appendMsg('ai', '抱歉，无法解析AI回复内容');
+            }
+          } catch (parseError) {
+            appendMsg('ai', '抱歉，无法解析AI回复格式');
+          }
+        } else {
+          
+          appendMsg('ai', '无法解析AI回复');
+        }
+
+      } catch (error) {
+        
+        removeMsg(loadingId);
+        appendMsg('ai', '抱歉，我暂时无法回应，请稍后再试。');
+      } finally {
+        document.getElementById('send-btn').disabled = false;
       }
-      div.innerHTML = content;
-      chat.appendChild(div);
-      setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 0);
-      return div.id;
-    }
-    function removeMsg(id) {
-      const el = document.getElementById(id);
-      if(el) el.remove();
     }
     // 禁用发送按钮逻辑
     document.addEventListener('DOMContentLoaded', function() {

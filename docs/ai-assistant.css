@@ -29,7 +29,7 @@
 }
 
 .chat-drawer {
-  display: flex;
+  display: none;
   flex-direction: column;
   height: 100vh;
   background-color: #fff;
@@ -226,4 +226,87 @@
   border-radius: 8px;
   padding: 10px !important;
   font-size: 14px;
+}
+
+/* Markdown增强样式 */
+.ai-bubble h1, 
+.ai-bubble h2, 
+.ai-bubble h3, 
+.ai-bubble h4 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ai-bubble h1 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3em;
+}
+
+.ai-bubble h2 {
+  font-size: 1.3em;
+}
+
+.ai-bubble h3 {
+  font-size: 1.15em;
+}
+
+.ai-bubble h4 {
+  font-size: 1.05em;
+}
+
+.ai-bubble a {
+  color: var(--brand-color);
+  text-decoration: none;
+}
+
+.ai-bubble a:hover {
+  text-decoration: underline;
+}
+
+.ai-bubble table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+.ai-bubble table th,
+.ai-bubble table td {
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+}
+
+.ai-bubble table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.ai-bubble table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.ai-bubble img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.ai-bubble hr {
+  height: 1px;
+  background-color: var(--border-color);
+  border: none;
+  margin: 1em 0;
+}
+
+.ai-bubble ul li, 
+.ai-bubble ol li {
+  margin-bottom: 0.3em;
+}
+
+.ai-bubble code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 } 
