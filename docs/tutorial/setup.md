@@ -1,14 +1,33 @@
 # 工具下载和配置
 
 ## 本节中你会了解
-- 制作地图需要的基础工具：```Valve Hammer Editor 3.5``` （VHE、hammer）
+- 制作地图需要的基础工具：```Trenchbroom``` （<del>Hammer,JACK</del>)**
+- 因为`Trenchbroom`开源且一直更新，不管是新手还是老油条都建议使用**
 - 准备工作：如何配置制图工具
 
 ## 制图工具
-要制作地图，先要有趁手的工具。Valve Hammer Editor（简称VHE或hammer）是V社开发用于制作CS地图的软件，我们制作地图大部分内容都在这个软件里进行。VHE3.5是为CS1.6地图开发的最新版本（再往上的VHE4+是为CSS、CSGO制作地图的，互相不通用）。关于VHE的更多信息，[可以看这里](wiki/vhe)。
-> J.A.C.K. （Jack hammer）是VHE的替代品，他是非官方开发的软件，主要功能和VHE相同，但是提供了很多方便的操作，详情可以看这里[J.A.C.K. :: Official Website (hlfx.ru)](https://jack.hlfx.ru/en/)，本文依旧针对VHE做讲解，但大部分内容是互通的。
+要制作地图，先要有趁手的工具。Trenchbroom（简称TB）是一款强大的开源地图编辑器，最初为Quake游戏开发，但现在已经支持包括CS1.6在内的多种游戏。与传统的Valve Hammer Editor（VHE）相比，Trenchbroom具有更现代化的界面、更丰富的功能和持续的更新维护。它支持多种操作系统（Windows、MacOS、Linux），并提供了许多便捷的编辑功能，如无限撤销/重做、更精确的几何体操作和更灵活的贴图系统。
 
-首先在电脑上下载这个软件，这里提供了一个版本的VHE[【下载hammer工具包】](resources/CS地图制作工具包%202023.03.21.zip ':ignore')，它除了基础的hammer3.5以外，还打包了其他可能用到的工具，包括：
+Trenchbroom的主要优势：
+- 开源且持续更新维护
+- 跨平台支持（Windows、MacOS、Linux）
+- 现代化界面和更高效的工作流程
+- 强大的编辑功能和更精准的几何体操作
+- 支持多种游戏引擎和格式
+
+你可以从[Trenchbroom官方GitHub](https://github.com/TrenchBroom/TrenchBroom/releases)下载最新版本。
+
+或者从[Lws汉化版本](resources/TrenchBroom.zip ':ignore')如果你想汉化还有好玩的功能可以尝试。
+
+对于习惯使用传统工具的制图者，以下是其他可选工具的信息：
+
+> 旧版教程 Valve Hammer Editor 3.5 [链接](tutorial/legacy/setup)
+
+> Valve Hammer Editor 3.5（VHE）是V社官方为CS1.6地图开发的编辑器，是很多老制图者熟悉的工具。VHE3.5是为CS1.6地图开发的最新版本（再往上的VHE4+是为CSS、CSGO制作地图的，互相不通用）。关于VHE的更多信息，[可以看这里](wiki/vhe)。
+
+> J.A.C.K.（Jack hammer）是VHE的替代品，他是非官方开发的软件，主要功能和VHE相同，但是提供了很多方便的操作，详情可以看这里[J.A.C.K. :: Official Website (hlfx.ru)](https://jack.hlfx.ru/en/)。
+
+如果你仍然希望使用传统工具，这里提供了一个版本的VHE[【下载hammer工具包】](resources/CS地图制作工具包%202023.03.21.zip ':ignore')，它除了基础的hammer3.5以外，还打包了其他可能用到的工具，包括：
 - **hammer3.5**：最重要的制图工具，modchina同盟社版，X-man汉化
 - **最新fgd**：V大 *cs16_0.8.2.0_vl.fgd*
 - **最新编译程序**：V大 *vhlt v34*，64位
