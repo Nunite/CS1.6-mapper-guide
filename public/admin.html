@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>内容管理中心</title>
   
-  <!-- Vditor Editor CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css" />
+  <!-- Editor.md CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.min.css" />
   
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
@@ -43,10 +43,11 @@
       box-sizing: border-box;
     }
 
-    /* --- 主布局 (三栏) --- */
+    /* --- 主布局 (两栏) --- */
     .main-layout {
       display: flex;
       height: 100vh;
+      overflow: hidden; /* 防止整体滚动 */
     }
 
     /* Pane 1: 左侧边栏（整合文件树和文件列表） */
@@ -262,6 +263,8 @@
       display: flex;
       flex-direction: column;
       background-color: var(--bg-content);
+      height: 100vh;
+      overflow: hidden;
     }
     
     .editor-header {
@@ -306,6 +309,7 @@
     #editor-container {
       flex-grow: 1;
       position: relative;
+      height: calc(100vh - 60px); /* 减去标题栏的高度 */
     }
 
     /* 欢迎/空状态 */
@@ -357,10 +361,46 @@
       bottom: 40px;
     }
     
-    /* Vditor 样式覆盖 */
-    .vditor {
+    /* Editor.md 样式覆盖 */
+    .editormd {
+      border: none !important;
+      margin: 0 !important;
+    }
+    
+    .editormd-preview-container {
+      padding: 20px !important;
+    }
+    
+    /* 确保编辑器和预览区滚动条显示 */
+    .CodeMirror-scroll, .editormd-preview {
+      overflow: auto !important;
+    }
+    
+    /* 自定义保存按钮 */
+    .quick-save-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background-color: var(--brand-color);
+      color: white;
       border: none;
-      height: 100%;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .quick-save-btn:hover {
+      background-color: var(--brand-color-hover);
+    }
+    
+    .quick-save-btn i {
+      margin-right: 5px;
     }
   </style>
 </head>
@@ -405,7 +445,7 @@
          <div class="editor-header">
             <input type="text" id="editor-title" class="editor-title-input" placeholder="请输入文档标题...">
             <div class="editor-actions">
-                <button id="save-btn" class="btn-save" disabled>
+                <button id="save-btn" class="btn-save" disabled style="display: none;">
                     <i class="fa-solid fa-save"></i> 保存
                 </button>
             </div>
@@ -418,6 +458,11 @@
             </div>
          </div>
       </div>
+      
+      <!-- 快速保存按钮 -->
+      <button id="quick-save-btn" class="quick-save-btn" style="display: none;">
+        <i class="fa-solid fa-save"></i> 保存
+      </button>
     </main>
   </div>
 
@@ -427,8 +472,11 @@
   </div>
   <div id="toast" class="toast-notification"></div>
 
-  <!-- Vditor Editor JS -->
-  <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
+  <!-- jQuery (必须在Editor.md之前引入) -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+  <!-- Editor.md JS -->
+  <script src="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.min.js"></script>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -443,6 +491,7 @@
           editorContainer: document.getElementById('editor-container'),
           editorTitle: document.getElementById('editor-title'),
           saveBtn: document.getElementById('save-btn'),
+          quickSaveBtn: document.getElementById('quick-save-btn'),
           newFileBtn: document.getElementById('new-file-btn'),
           loading: document.getElementById('loading'),
           toast: document.getElementById('toast'),
@@ -454,6 +503,7 @@
           currentFile: null, // { path, name, content, folder }
           editorInstance: null,
           hasUnsavedChanges: false,
+          originalContent: "", // 保存原始内容用于比较
         },
 
         // 初始化
@@ -467,6 +517,7 @@
         bindEvents() {
           this.elements.newFileBtn.addEventListener('click', () => this.createNewFile());
           this.elements.saveBtn.addEventListener('click', () => this.saveFile());
+          this.elements.quickSaveBtn.addEventListener('click', () => this.saveFile());
           this.elements.editorTitle.addEventListener('input', () => this.setUnsavedChanges(true));
         },
         
@@ -589,8 +640,18 @@
         
         // 加载并打开一个文件
         async loadFile(path) {
-          if (this.state.hasUnsavedChanges && !confirm('您有未保存的更改，确定要切换吗？')) {
-            return;
+          // 检查是否有未保存的更改
+          if (this.state.hasUnsavedChanges) {
+            // 比较当前内容与原始内容
+            const currentContent = this.state.editorInstance ? this.state.editorInstance.getMarkdown() : "";
+            if (currentContent !== this.state.originalContent) {
+              if (!confirm('您有未保存的更改，确定要切换吗？')) {
+                return;
+              }
+            } else {
+              // 内容实际上没有变化，重置状态
+              this.state.hasUnsavedChanges = false;
+            }
           }
 
           this.showLoading(true);
@@ -601,26 +662,18 @@
             
             const fileData = this.state.files.find(f => f.path === path);
             this.state.currentFile = { ...fileData, content };
+            // 保存原始内容用于后续比较
+            this.state.originalContent = content;
 
             this.elements.editorWrapper.style.display = ''; // 显示编辑器
-            
             this.elements.editorTitle.value = this.state.currentFile.name;
             
-            if (this.state.editorInstance) {
-              // 确保编辑器实例已准备好
-              if (this.state.editorInstance.vditor && this.state.editorInstance.vditor.currentMode) {
-                this.state.editorInstance.setValue(content);
-              } else {
-                // 如果编辑器未完全初始化，存储内容等待after回调处理
-                this.pendingContent = content;
-              }
-            } else {
-              this.pendingContent = content;
-              this.initEditor(''); // 先用空内容初始化，在after回调中设置真正的内容
-            }
-
+            this.initEditor(content);
             this.updateActiveFileUI(path);
             this.setUnsavedChanges(false);
+            
+            // 显示快速保存按钮
+            this.elements.quickSaveBtn.style.display = 'flex';
 
           } catch (error) {
             this.showToast(`打开文件失败: ${error.message}`, 'error');
@@ -640,20 +693,12 @@
           this.elements.editorTitle.value = '';
           
           const newContent = `# 新建文档\n\n在此处开始编写...`;
-          if (this.state.editorInstance) {
-            // 确保编辑器实例已准备好
-            if (this.state.editorInstance.vditor && this.state.editorInstance.vditor.currentMode) {
-              this.state.editorInstance.setValue(newContent);
-            } else {
-              // 如果编辑器未完全初始化，存储内容等待after回调处理
-              this.pendingContent = newContent;
-            }
-          } else {
-            this.pendingContent = newContent;
-            this.initEditor(''); // 先用空内容初始化，在after回调中设置真正的内容
-          }
+          this.initEditor(newContent);
           this.updateActiveFileUI(null);
           this.setUnsavedChanges(true); // 新文件默认为有未保存更改
+          
+          // 显示快速保存按钮
+          this.elements.quickSaveBtn.style.display = 'flex';
         },
 
         // 保存文件
@@ -675,14 +720,16 @@
 
           this.showLoading(true);
           this.elements.saveBtn.disabled = true;
+          this.elements.quickSaveBtn.disabled = true;
 
           try {
+            const content = this.state.editorInstance.getMarkdown();
             const response = await fetch('/api/save', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 path,
-                content: this.state.editorInstance.getValue()
+                content
               })
             });
 
@@ -691,6 +738,8 @@
               throw new Error(errorText || '保存失败');
             }
             
+            // 更新原始内容
+            this.state.originalContent = content;
             this.showToast('保存成功!', 'success');
             this.setUnsavedChanges(false);
             await this.loadFiles(); // 重新加载文件列表以反映新文件
@@ -708,29 +757,71 @@
           }
         },
 
-        // 初始化 Vditor 编辑器
-        initEditor(initialValue) {
-          this.elements.editorContainer.innerHTML = ''; // 清空欢迎界面
-          this.state.editorInstance = new Vditor(this.elements.editorContainer, {
-            height: '100%',
-            value: initialValue,
-            mode: 'sv', // 分屏预览模式
-            cache: { enable: false },
-            preview: {
-              delay: 200, // 减少预览延迟时间为200ms
-              maxWidth: 800,
-              theme: {
-                current: 'light'
-              }
+        // 初始化 Editor.md 编辑器
+        initEditor(content) {
+          // 清空容器
+          this.elements.editorContainer.innerHTML = '';
+          
+          // 创建编辑器需要的DIV
+          const editorDiv = document.createElement('div');
+          editorDiv.id = 'editormd';
+          this.elements.editorContainer.appendChild(editorDiv);
+          
+          // 销毁已存在的实例
+          if (this.state.editorInstance) {
+            try {
+              this.state.editorInstance = null;
+            } catch (e) {
+              console.error('清理编辑器实例失败', e);
+            }
+          }
+          
+          // 保存原始内容
+          this.state.originalContent = content;
+          this.state.hasUnsavedChanges = false;
+          
+          const app = this;
+          
+          // 初始化 Editor.md
+          this.state.editorInstance = editormd("editormd", {
+            width: "100%",
+            height: "100%",
+            path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
+            theme: "default",
+            previewTheme: "default",
+            editorTheme: "default",
+            markdown: content,
+            codeFold: true,
+            searchReplace: true,
+            saveHTMLToTextarea: true,
+            htmlDecode: "style,script,iframe",
+            emoji: true,
+            taskList: true,
+            tocm: true,
+            tex: true,
+            flowChart: true,
+            sequenceDiagram: true,
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "webp"],
+            imageUploadURL: "/api/upload",
+            toolbarIcons: function() {
+              return [
+                "undo", "redo", "|", 
+                "bold", "italic", "quote", "ucwords", "uppercase", "lowercase", "|", 
+                "h1", "h2", "h3", "h4", "h5", "h6", "|", 
+                "list-ul", "list-ol", "hr", "|",
+                "link", "image", "code", "preformatted-text", "code-block", "table", "|",
+                "watch", "preview", "fullscreen", "|",
+                "help"
+              ]
             },
-            input: () => {
-              this.setUnsavedChanges(true);
-            },
-            after: () => {
-              // 编辑器初始化完成后的回调
-              if (this.pendingContent) {
-                this.state.editorInstance.setValue(this.pendingContent);
-                this.pendingContent = null;
+            onchange: function() {
+              // 只有内容真的发生变化时才标记为未保存
+              const currentContent = app.state.editorInstance.getMarkdown();
+              if (currentContent !== app.state.originalContent) {
+                app.setUnsavedChanges(true);
+              } else {
+                app.setUnsavedChanges(false);
               }
             }
           });
@@ -751,6 +842,14 @@
         setUnsavedChanges(status) {
           this.state.hasUnsavedChanges = status;
           this.elements.saveBtn.disabled = !status;
+          this.elements.quickSaveBtn.disabled = !status;
+          
+          // 更新快速保存按钮的状态提示
+          if (status) {
+            this.elements.quickSaveBtn.classList.add('unsaved');
+          } else {
+            this.elements.quickSaveBtn.classList.remove('unsaved');
+          }
         },
 
         // 显示/隐藏加载动画
