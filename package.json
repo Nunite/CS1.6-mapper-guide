@@ -1,0 +1,18 @@
+{
+  "name": "cs16-mapper-guide",
+  "version": "1.0.0",
+  "description": "CS1.6地图制作指南",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo \"构建静态文件成功\""
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

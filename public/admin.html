@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内容管理中心</title>
+  
+  <!-- Vditor Editor CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css" />
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+
+  <style>
+    :root {
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --bg-layout: #f7f7f9;
+      --bg-sidebar: #fdfdfd;
+      --bg-content: #ffffff;
+      --border-color: #e9e9e9;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-placeholder: #a9a9a9;
+      --brand-color: #d23f31;
+      --brand-color-hover: #b93225;
+      --active-bg: #f0f0f0;
+    }
+
+    /* --- 基本重置 --- */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: var(--font-family);
+      background-color: var(--bg-layout);
+      color: var(--text-primary);
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    /* --- 主布局 (三栏) --- */
+    .main-layout {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Pane 1: 左侧边栏（整合文件树和文件列表） */
+    .sidebar {
+      width: 300px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: width 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 16px;
+      font-weight: 600;
+      font-size: 18px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+    }
+    .sidebar-header .logo-icon {
+      color: var(--brand-color);
+      margin-right: 10px;
+    }
+
+    /* 新增：边栏内容区域 */
+    .sidebar-content {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      overflow: hidden;
+    }
+    
+    /* 新增：边栏分区 */
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sidebar-section:last-child {
+      border-bottom: none;
+      flex-grow: 1;
+    }
+    
+    .sidebar-section-header {
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f9f9f9;
+    }
+    
+    .sidebar-section-header h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .file-tree {
+      flex-grow: 0;
+      overflow-y: auto;
+      padding: 12px;
+      max-height: 200px;
+    }
+
+    .file-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .folder > .folder-header {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+    }
+    .folder > .folder-header:hover { background-color: var(--active-bg); }
+    
+    /* 文件夹项样式 */
+    .folder-item {
+      margin-bottom: 2px;
+    }
+    
+    /* 文件夹头部样式 */
+    .folder-header {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+    }
+    
+    .folder-header:hover {
+      background-color: var(--active-bg);
+    }
+    
+    /* 所有文档按钮样式 */
+    .all-docs-btn {
+      display: flex;
+      align-items: center;
+      padding: 10px 8px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+      margin-bottom: 8px;
+      background-color: #f5f5f5;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .all-docs-btn:hover { 
+      background-color: var(--active-bg); 
+    }
+    .all-docs-btn .folder-icon {
+      margin-right: 8px;
+      color: var(--brand-color);
+    }
+    
+    /* 文件夹图标样式 */
+    .folder-icon {
+      margin-right: 8px;
+      color: var(--text-secondary);
+    }
+    
+    /* 文件夹名称样式 */
+    .folder-name {
+      flex-grow: 1;
+      padding: 2px 0;
+    }
+    
+    /* 文件夹激活状态 */
+    .folder-header.active {
+      background-color: var(--active-bg);
+      font-weight: 600;
+      color: var(--brand-color);
+    }
+    
+    .folder-header.active .folder-icon {
+      color: var(--brand-color);
+    }
+    
+    .folder-content {
+      padding-left: 12px;
+      display: none;
+    }
+    .folder.open > .folder-content {
+      display: block;
+    }
+
+    /* 文件列表样式更新 */
+    #new-file-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 14px;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    #new-file-btn:hover {
+      color: var(--brand-color);
+      background-color: var(--active-bg);
+    }
+    
+    .file-list {
+      max-height: calc(100vh - 300px);
+    }
+    
+    .file-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .file-item:last-child { border-bottom: none; }
+    .file-item:hover { background-color: #f5f5f5; }
+    .file-item.active {
+      background-color: var(--brand-color);
+      color: white;
+    }
+    .file-item.active .file-meta {
+        color: rgba(255,255,255,0.8);
+    }
+    .file-title {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* 移除不再需要的样式 */
+    .file-list-pane {
+      display: none; /* 隐藏不再使用的元素 */
+    }
+
+    /* Pane 3: 右侧 (编辑器) */
+    .editor-pane {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-content);
+    }
+    
+    .editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .editor-title-input {
+      border: none;
+      background: none;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 8px 0;
+      width: 100%;
+      color: var(--text-primary);
+    }
+    .editor-title-input:focus { outline: none; }
+    
+    .editor-actions button {
+      margin-left: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .btn-save {
+      background-color: var(--brand-color);
+      color: white;
+    }
+    .btn-save:hover { background-color: var(--brand-color-hover); }
+    .btn-save:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    #editor-container {
+      flex-grow: 1;
+      position: relative;
+    }
+
+    /* 欢迎/空状态 */
+    .welcome-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: var(--text-placeholder);
+    }
+    .welcome-screen i {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+    }
+    .welcome-screen h3 {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    /* 加载和提示 */
+    .loading-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      font-size: 20px;
+      color: var(--text-secondary);
+    }
+    
+    .toast-notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0,0,0,0.75);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease, bottom 0.3s ease;
+    }
+    .toast-notification.show {
+      opacity: 1;
+      bottom: 40px;
+    }
+    
+    /* Vditor 样式覆盖 */
+    .vditor {
+      border: none;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="main-layout">
+    <!-- Pane 1: 左侧边栏（整合文件树和文件列表） -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-file-lines logo-icon"></i>
+        <span>内容中心</span>
+      </div>
+      
+      <!-- 文件夹和文档区域 -->
+      <div class="sidebar-content">
+        <div class="sidebar-section">
+          <div class="sidebar-section-header">
+            <h3>文件夹</h3>
+          </div>
+          <div id="fileTree" class="file-tree">
+            <!-- 文件树将动态生成在这里 -->
+          </div>
+        </div>
+        
+        <div class="sidebar-section">
+          <div class="sidebar-section-header">
+            <h3 id="current-folder-title">所有文档</h3>
+            <button id="new-file-btn" title="新建文档">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+          <div id="fileList" class="file-list">
+            <!-- 文件列表将动态生成在这里 -->
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Pane 3 现在变成 Pane 2: 右侧编辑器 -->
+    <main class="editor-pane">
+      <div id="editor-wrapper">
+         <div class="editor-header">
+            <input type="text" id="editor-title" class="editor-title-input" placeholder="请输入文档标题...">
+            <div class="editor-actions">
+                <button id="save-btn" class="btn-save" disabled>
+                    <i class="fa-solid fa-save"></i> 保存
+                </button>
+            </div>
+         </div>
+         <div id="editor-container">
+            <div class="welcome-screen">
+                <i class="fa-regular fa-hand-pointer"></i>
+                <h3>请从左侧选择文档进行编辑</h3>
+                <p>或点击 <i class="fa-solid fa-plus"></i> 新建文档</p>
+            </div>
+         </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 加载指示器和提示 -->
+  <div id="loading" class="loading-overlay" style="display: none;">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+  </div>
+  <div id="toast" class="toast-notification"></div>
+
+  <!-- Vditor Editor JS -->
+  <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      const App = {
+        // DOM 元素
+        elements: {
+          fileTree: document.getElementById('fileTree'),
+          fileList: document.getElementById('fileList'),
+          currentFolderTitle: document.getElementById('current-folder-title'),
+          editorWrapper: document.getElementById('editor-wrapper'),
+          editorContainer: document.getElementById('editor-container'),
+          editorTitle: document.getElementById('editor-title'),
+          saveBtn: document.getElementById('save-btn'),
+          newFileBtn: document.getElementById('new-file-btn'),
+          loading: document.getElementById('loading'),
+          toast: document.getElementById('toast'),
+        },
+        
+        // 应用状态
+        state: {
+          files: [],
+          currentFile: null, // { path, name, content, folder }
+          editorInstance: null,
+          hasUnsavedChanges: false,
+        },
+
+        // 初始化
+        init() {
+          this.bindEvents();
+          this.loadFiles();
+          this.elements.editorWrapper.style.display = 'none';
+        },
+        
+        // 绑定所有事件监听器
+        bindEvents() {
+          this.elements.newFileBtn.addEventListener('click', () => this.createNewFile());
+          this.elements.saveBtn.addEventListener('click', () => this.saveFile());
+          this.elements.editorTitle.addEventListener('input', () => this.setUnsavedChanges(true));
+        },
+        
+        // 加载所有文件
+        async loadFiles() {
+          this.showLoading(true);
+          try {
+            const response = await fetch('/api/files');
+            if (!response.ok) throw new Error('无法获取文件列表');
+            const filesData = await response.json();
+            
+            this.state.files = filesData.map(f => {
+              const parts = f.path.split('/');
+              const name = parts.pop();
+              const folder = parts.join('/') || '根目录';
+              return { path: f.path, name, folder };
+            });
+
+            this.renderFileTree();
+            this.renderFileList(); // 默认显示所有文件
+          } catch (error) {
+            this.showToast(`加载失败: ${error.message}`, 'error');
+            console.error(error);
+          } finally {
+            this.showLoading(false);
+          }
+        },
+        
+        // 渲染左侧文件夹树
+        renderFileTree() {
+          const folders = this.state.files.reduce((acc, file) => {
+            (acc[file.folder] = acc[file.folder] || []).push(file);
+            return acc;
+          }, {});
+
+          this.elements.fileTree.innerHTML = '';
+          const sortedFolders = Object.keys(folders).sort();
+
+          // 添加"所有文档"按钮到顶部
+          const allDocsBtn = document.createElement('div');
+          allDocsBtn.className = 'folder-header all-docs-btn';
+          allDocsBtn.innerHTML = `
+              <i class="fa-solid fa-folder-open folder-icon"></i> 所有文档
+          `;
+          allDocsBtn.addEventListener('click', () => {
+            // 清除所有活动状态
+            document.querySelectorAll('.folder-header').forEach(el => {
+              el.classList.remove('active');
+            });
+            allDocsBtn.classList.add('active');
+            this.renderFileList();
+          });
+          this.elements.fileTree.appendChild(allDocsBtn);
+          // 默认"所有文档"处于激活状态
+          allDocsBtn.classList.add('active');
+          
+          // 只显示非根目录的文件夹
+          const nonRootFolders = sortedFolders.filter(folder => folder !== '根目录');
+          
+          if (nonRootFolders.length === 0) {
+            const noFolders = document.createElement('p');
+            noFolders.style.color = '#999';
+            noFolders.style.padding = '8px';
+            noFolders.style.textAlign = 'center';
+            noFolders.textContent = '无文件夹';
+            this.elements.fileTree.appendChild(noFolders);
+            return;
+          }
+          
+          nonRootFolders.forEach(folderName => {
+              const folderEl = document.createElement('div');
+              folderEl.className = 'folder-item';
+              folderEl.innerHTML = `
+                  <div class="folder-header" data-folder="${folderName}">
+                      <i class="fa-solid fa-folder folder-icon"></i>
+                      <span class="folder-name">${folderName}</span>
+                  </div>
+              `;
+              
+              // 文件夹点击事件
+              folderEl.querySelector('.folder-header').addEventListener('click', () => {
+                  // 清除所有活动状态
+                  document.querySelectorAll('.folder-header').forEach(el => {
+                      el.classList.remove('active');
+                  });
+                  // 设置当前文件夹为活动状态
+                  folderEl.querySelector('.folder-header').classList.add('active');
+                  
+                  // 渲染该文件夹的文件列表
+                  this.renderFileList(folderName);
+              });
+              
+              this.elements.fileTree.appendChild(folderEl);
+          });
+        },
+        
+        // 渲染中间文件列表
+        renderFileList(folderName = 'all') {
+            this.elements.currentFolderTitle.textContent = folderName === 'all' ? '所有文档' : folderName;
+            
+            const filesToShow = (folderName === 'all')
+                ? this.state.files
+                : this.state.files.filter(f => f.folder === folderName);
+
+            this.elements.fileList.innerHTML = '';
+            if (filesToShow.length === 0) {
+                this.elements.fileList.innerHTML = '<p style="text-align:center; color: #999; padding: 20px;">无文档</p>';
+                return;
+            }
+
+            filesToShow.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.dataset.path = file.path;
+                item.innerHTML = `<div class="file-title">${file.name}</div><div class="file-meta">${file.folder}</div>`;
+                item.addEventListener('click', () => this.loadFile(file.path));
+                this.elements.fileList.appendChild(item);
+            });
+        },
+        
+        // 加载并打开一个文件
+        async loadFile(path) {
+          if (this.state.hasUnsavedChanges && !confirm('您有未保存的更改，确定要切换吗？')) {
+            return;
+          }
+
+          this.showLoading(true);
+          try {
+            const response = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
+            if (!response.ok) throw new Error('无法读取文件内容');
+            const content = await response.text();
+            
+            const fileData = this.state.files.find(f => f.path === path);
+            this.state.currentFile = { ...fileData, content };
+
+            this.elements.editorWrapper.style.display = ''; // 显示编辑器
+            
+            this.elements.editorTitle.value = this.state.currentFile.name;
+            
+            if (this.state.editorInstance) {
+              // 确保编辑器实例已准备好
+              if (this.state.editorInstance.vditor && this.state.editorInstance.vditor.currentMode) {
+                this.state.editorInstance.setValue(content);
+              } else {
+                // 如果编辑器未完全初始化，存储内容等待after回调处理
+                this.pendingContent = content;
+              }
+            } else {
+              this.pendingContent = content;
+              this.initEditor(''); // 先用空内容初始化，在after回调中设置真正的内容
+            }
+
+            this.updateActiveFileUI(path);
+            this.setUnsavedChanges(false);
+
+          } catch (error) {
+            this.showToast(`打开文件失败: ${error.message}`, 'error');
+            console.error(error);
+          } finally {
+            this.showLoading(false);
+          }
+        },
+
+        // 创建一个新文件
+        createNewFile() {
+          if (this.state.hasUnsavedChanges && !confirm('您有未保存的更改，确定要新建吗？')) {
+            return;
+          }
+          this.state.currentFile = { isNew: true, path: '', name: '', content: '', folder: '' };
+          this.elements.editorWrapper.style.display = '';
+          this.elements.editorTitle.value = '';
+          
+          const newContent = `# 新建文档\n\n在此处开始编写...`;
+          if (this.state.editorInstance) {
+            // 确保编辑器实例已准备好
+            if (this.state.editorInstance.vditor && this.state.editorInstance.vditor.currentMode) {
+              this.state.editorInstance.setValue(newContent);
+            } else {
+              // 如果编辑器未完全初始化，存储内容等待after回调处理
+              this.pendingContent = newContent;
+            }
+          } else {
+            this.pendingContent = newContent;
+            this.initEditor(''); // 先用空内容初始化，在after回调中设置真正的内容
+          }
+          this.updateActiveFileUI(null);
+          this.setUnsavedChanges(true); // 新文件默认为有未保存更改
+        },
+
+        // 保存文件
+        async saveFile() {
+          if (!this.state.currentFile) return;
+
+          const title = this.elements.editorTitle.value.trim();
+          if (!title) {
+            this.showToast('文档标题不能为空', 'error');
+            return;
+          }
+
+          let path = this.state.currentFile.path;
+          if (this.state.currentFile.isNew) {
+            const newPath = prompt("请输入新文件的路径 (例如: docs/new-file.md):", `docs/${title.endsWith('.md') ? title : title + '.md'}`);
+            if (!newPath) return; // 用户取消
+            path = newPath;
+          }
+
+          this.showLoading(true);
+          this.elements.saveBtn.disabled = true;
+
+          try {
+            const response = await fetch('/api/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                path,
+                content: this.state.editorInstance.getValue()
+              })
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(errorText || '保存失败');
+            }
+            
+            this.showToast('保存成功!', 'success');
+            this.setUnsavedChanges(false);
+            await this.loadFiles(); // 重新加载文件列表以反映新文件
+            
+            // 如果是新文件，保存后需要加载它
+            if (this.state.currentFile.isNew) {
+              this.loadFile(path);
+            }
+            
+          } catch (error) {
+            this.showToast(`保存失败: ${error.message}`, 'error');
+            console.error(error);
+          } finally {
+            this.showLoading(false);
+          }
+        },
+
+        // 初始化 Vditor 编辑器
+        initEditor(initialValue) {
+          this.elements.editorContainer.innerHTML = ''; // 清空欢迎界面
+          this.state.editorInstance = new Vditor(this.elements.editorContainer, {
+            height: '100%',
+            value: initialValue,
+            mode: 'sv', // 分屏预览模式
+            cache: { enable: false },
+            preview: {
+              delay: 200, // 减少预览延迟时间为200ms
+              maxWidth: 800,
+              theme: {
+                current: 'light'
+              }
+            },
+            input: () => {
+              this.setUnsavedChanges(true);
+            },
+            after: () => {
+              // 编辑器初始化完成后的回调
+              if (this.pendingContent) {
+                this.state.editorInstance.setValue(this.pendingContent);
+                this.pendingContent = null;
+              }
+            }
+          });
+        },
+
+        // 更新UI以高亮显示当前活动文件
+        updateActiveFileUI(path) {
+          document.querySelectorAll('.file-item').forEach(el => {
+            if (el.dataset.path === path) {
+              el.classList.add('active');
+            } else {
+              el.classList.remove('active');
+            }
+          });
+        },
+        
+        // 设置未保存状态
+        setUnsavedChanges(status) {
+          this.state.hasUnsavedChanges = status;
+          this.elements.saveBtn.disabled = !status;
+        },
+
+        // 显示/隐藏加载动画
+        showLoading(show) {
+          this.elements.loading.style.display = show ? 'flex' : 'none';
+        },
+
+        // 显示 Toast 提示
+        showToast(message, type = 'info') {
+          const toast = this.elements.toast;
+          toast.textContent = message;
+          toast.className = `toast-notification show ${type}`;
+          setTimeout(() => {
+            toast.className = 'toast-notification';
+          }, 3000);
+        }
+      };
+
+      // 启动应用
+      App.init();
+    });
+  </script>
+</body>
+</html>

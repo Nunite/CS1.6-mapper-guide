@@ -4,3 +4,4 @@ docs/index.html
 ignored/
 *.rmf
 ai_chat_api.py
+node_modules/
