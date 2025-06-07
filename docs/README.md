@@ -1,4 +1,4 @@
-# 彩笔制图宝典 *CS1.6地图制作/Hammer3.5 教程与百科*
+# 彩笔制图宝典 *CS1.6地图制作 & Trenchbroom (<del>Hammer3.5</del>) 教程与百科*
 ![logo](resources/logo_title.svg)
 
 欢迎来到本教程兼Wiki！本站提供CS1.6地图制作的教程，以及相关的各种资料百科，总结了常用资料以及许多人自己的经验。

@@ -4,6 +4,50 @@ const path = require('path');
 const { exec } = require('child_process');
 const router = express.Router();
 
+// IP限制中间件 - 只允许特定IP访问管理界面
+const ipRestriction = (req, res, next) => {
+  const allowedIPs = ['36.148.149.131'];
+  // 获取客户端IP的多种方式
+  let clientIP = req.headers['x-forwarded-for'] || 
+               req.headers['x-real-ip'] || 
+               req.connection.remoteAddress ||
+               req.socket.remoteAddress;
+  
+  // 如果是逗号分隔的多个IP，取第一个（通常是真实客户端IP）
+  if (clientIP && clientIP.includes(',')) {
+    clientIP = clientIP.split(',')[0].trim();
+  }
+  
+  // 处理IPv6格式的IPv4地址 (::ffff:192.168.1.1)
+  if (clientIP && clientIP.includes('::ffff:')) {
+    clientIP = clientIP.replace('::ffff:', '');
+  }
+  
+  console.log(`[IP检查] 原始客户端IP: ${req.connection.remoteAddress}, 处理后IP: ${clientIP}, 路径: ${req.path}`);
+  
+  // 检查请求路径是否以/admin开头
+  if (req.path.startsWith('/admin')) {
+    // 检查IP是否在允许列表中（使用包含检查更灵活）
+    const isAllowed = allowedIPs.some(ip => clientIP.includes(ip)) || 
+                     clientIP.includes('127.0.0.1') || 
+                     clientIP.includes('::1') ||
+                     clientIP === '::1';
+    
+    if (isAllowed) {
+      console.log(`[访问允许] IP ${clientIP} 访问管理页面 ${req.path}`);
+      next();
+    } else {
+      console.log(`[安全警告] IP ${clientIP} 尝试访问管理页面 ${req.path}`);
+      return res.status(403).send('访问被拒绝: 您的IP地址未获授权');
+    }
+  } else {
+    next();
+  }
+};
+
+// 应用IP限制中间件到所有路由
+router.use(ipRestriction);
+
 // 鉴权中间件
 const requireAuth = (req, res, next) => {
   // 这里应该实现真正的鉴权逻辑
