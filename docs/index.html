@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="libs/gitalk/1.8.0/gitalk.min.css">
   <link rel="stylesheet" href="ai-assistant.css">
   <link rel="stylesheet" href="libs/docsify-darklight-theme/style.min.css">
+  <link rel="stylesheet" href="custom-theme.css">
   <style>
     /* 本地字体 */
     @font-face {
@@ -100,6 +101,28 @@
         '/tutorial/_sidebar.md': '/_sidebar.md',
         '/wiki/_sidebar.md': '/_sidebar.md',
         '/wiki/entity/_sidebar.md': '/_sidebar.md',
+      },
+      // docsify-darklight-theme 配置
+      darklightTheme: {
+        defaultTheme: 'light',
+        dark: {
+          accent: '#5A87FF',
+          background: '#222222',
+          textColor: '#e1e1e1',
+          codeTextColor: '#ffffff',
+          codeBackgroundColor: '#333333',
+          borderColor: '#444444',
+          blockQuoteColor: '#9e9e9e',
+          highlightColor: '#ff6b6b',
+          sidebarSublink: '#c8c8c8'
+        },
+        light: {
+          accent: '#5A87FF',
+          background: '#ffffff',
+          textColor: '#34495e',
+          codeBackgroundColor: '#f8f8f8',
+          borderColor: 'rgba(0, 0, 0, 0.07)'
+        }
       }
     }
 

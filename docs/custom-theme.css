@@ -1,0 +1,77 @@
+/* 自定义docsify-darklight-theme样式 */
+
+:root {
+  /* 自定义暗色模式颜色变量 */
+  --dark-accent: #5A87FF; /* 主题色 */
+  --dark-background: #222222; /* 背景色 */
+  --dark-textColor: #e1e1e1; /* 文本颜色 */
+  --dark-codeTextColor: #ffffff; /* 代码文本颜色 */
+  --dark-codeBackgroundColor: #333333; /* 代码背景色 */
+  --dark-borderColor: #444444; /* 边框颜色 */
+  --dark-blockQuoteColor: #9e9e9e; /* 引用块颜色 */
+  --dark-highlightColor: #ff6b6b; /* 高亮色 */
+  --dark-sidebarSublink: #c8c8c8; /* 侧边栏链接颜色 */
+  
+  /* 自定义亮色模式颜色变量 */
+  --light-accent: #5A87FF; /* 主题色 */
+  --light-background: #ffffff; /* 背景色 */
+  --light-textColor: #34495e; /* 文本颜色 */
+  --light-codeBackgroundColor: #f8f8f8; /* 代码背景色 */
+  --light-borderColor: rgba(0, 0, 0, 0.07); /* 边框颜色 */
+}
+
+/* 自定义暗色模式下的其他样式 */
+body[data-theme="dark"] .sidebar {
+  background-color: var(--dark-background);
+  border-right-color: var(--dark-borderColor);
+}
+
+body[data-theme="dark"] .markdown-section h1,
+body[data-theme="dark"] .markdown-section h2,
+body[data-theme="dark"] .markdown-section h3,
+body[data-theme="dark"] .markdown-section h4,
+body[data-theme="dark"] .markdown-section h5,
+body[data-theme="dark"] .markdown-section h6 {
+  color: var(--dark-textColor);
+}
+
+body[data-theme="dark"] .markdown-section code {
+  background-color: var(--dark-codeBackgroundColor);
+  color: var(--dark-codeTextColor);
+}
+
+body[data-theme="dark"] .markdown-section blockquote {
+  border-left-color: var(--dark-accent);
+  color: var(--dark-blockQuoteColor);
+}
+
+body[data-theme="dark"] .markdown-section a {
+  color: var(--dark-accent);
+}
+
+/* 自定义暗色模式下的表格样式 */
+body[data-theme="dark"] .markdown-section table {
+  border-collapse: collapse;
+}
+
+body[data-theme="dark"] .markdown-section th {
+  background-color: #2a2a2a;
+}
+
+body[data-theme="dark"] .markdown-section tr:nth-child(2n) {
+  background-color: #252525;
+}
+
+body[data-theme="dark"] .markdown-section td, 
+body[data-theme="dark"] .markdown-section th {
+  border-color: var(--dark-borderColor);
+} 
+
+/* 修复暗色模式下图片放大查看器的背景 */
+body[data-theme="dark"] .medium-zoom-overlay {
+  background-color: var(--dark-background) !important;
+}
+
+body[data-theme="dark"] .medium-zoom-image--opened {
+  background-color: var(--dark-background);
+}

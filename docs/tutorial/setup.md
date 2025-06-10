@@ -1,8 +1,8 @@
 # 工具下载和配置
 
 ## 本节中你会了解
-- 制作地图需要的基础工具：```Trenchbroom``` （<del>Hammer,JACK</del>)**
-- 因为`Trenchbroom`开源且一直更新，不管是新手还是老油条都建议使用**
+- 制作地图需要的基础工具：```Trenchbroom``` （<del>Hammer,JACK</del>)
+- **`Trenchbroom`作为一款开源且持续维护的地图编辑器，凭借其优秀的功能和易用性，成为目前最推荐的制图工具**
 - 准备工作：如何配置制图工具
 
 ## 制图工具
@@ -15,45 +15,90 @@ Trenchbroom的主要优势：
 - 强大的编辑功能和更精准的几何体操作
 - 支持多种游戏引擎和格式
 
-你可以从[Trenchbroom官方GitHub](https://github.com/TrenchBroom/TrenchBroom/releases)下载最新版本。
+你可以从 [Trenchbroom官方GitHub](https://github.com/TrenchBroom/TrenchBroom/releases) 下载最新版本。
 
-或者从[Lws汉化版本](resources/TrenchBroom.zip ':ignore')如果你想汉化还有好玩的功能可以尝试。
+不过，为了获得更好的使用体验，我推荐使用针对CS1.6优化编译的TB版本，具体信息请继续阅读下文。
 
 对于习惯使用传统工具的制图者，以下是其他可选工具的信息：
 
 > 旧版教程 Valve Hammer Editor 3.5 [链接](tutorial/legacy/setup)
 
-> Valve Hammer Editor 3.5（VHE）是V社官方为CS1.6地图开发的编辑器，是很多老制图者熟悉的工具。VHE3.5是为CS1.6地图开发的最新版本（再往上的VHE4+是为CSS、CSGO制作地图的，互相不通用）。关于VHE的更多信息，[可以看这里](wiki/vhe)。
+> Valve Hammer Editor 3.5（VHE）是V社官方为CS1.6地图开发的编辑器，是很多老制图者熟悉的工具。VHE3.5是为CS1.6地图开发的最新版本（再往上的VHE4+是为CSS、CSGO制作地图的，互相不通用）。关于VHE的更多信息，[可以看这里](https://developer.valvesoftware.com/w/index.php?title=Zh/Valve_Hammer_Editor)。
 
 > J.A.C.K.（Jack hammer）是VHE的替代品，他是非官方开发的软件，主要功能和VHE相同，但是提供了很多方便的操作，详情可以看这里[J.A.C.K. :: Official Website (hlfx.ru)](https://jack.hlfx.ru/en/)。
 
-如果你仍然希望使用传统工具，这里提供了一个版本的VHE[【下载hammer工具包】](resources/CS地图制作工具包%202023.03.21.zip ':ignore')，它除了基础的hammer3.5以外，还打包了其他可能用到的工具，包括：
-- **hammer3.5**：最重要的制图工具，modchina同盟社版，X-man汉化
+这里提供了一个汉化版的TB版本以及对应的现代化工具包[[下载现代制图工具包]](resources/CS_MapToolPack.7z ':ignore')，它除了基础的TB以外，还打包了其他可能用到的工具，包括：
+
+- **Trenchbroom** ：最重要的制图工具,[Kristian Duske](https://github.com/kduske)主作者,[Lws](https://github.com/Nunite/TrenchBroom)汉化
 - **最新fgd**：V大 *cs16_0.8.2.0_vl.fgd*
-- **最新编译程序**：V大 *vhlt v34*，64位
-- **超级地图编译器**：第三方编译器，能方便地调整编译选项，发布前的最后一次编译一般用它，X-man开发
-- **spr、mdl、bsp查看工具**：*HL Texture Tools*和*Sprite Explorer*、*HLMV*、*BSP Viewer*
+- **最新编译程序**：[SDHLTx64](https://github.com/seedee/SDHLT)，这是一款基于V大vhlt的改进版编译器，支持更大的地图，模型生成阴影等等...
+- **BSP地图查看与编辑工具**：[newbspguy](https://github.com/UnrealKaraulov/newbspguy) - 一款功能强大的BSP工具，支持地图预览、基础编辑功能，以及实体、纹理等地图元素的查看和修改
+- **spr、mdl**：*HL Texture Tools*和*Sprite Explorer*、*HLMV*
 - **地形制作工具**：方便地制作山体，导出map，*GenSurf*和*Terrain Generator*两款
 - **纹理制作工具**：制作自己的wad纹理，*Wally*
 - **纹理提取工具**：从bsp里提取打包的纹理，*wintextract*
 - **反编译工具**：从bsp反编译得到map源文件，*winbspc*
 
+> **运行库要求**：Windows用户需要安装[适用于Visual Studio 2015、2017、2019和2022的Microsoft Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) (x64版本用于运行64位TrenchBroom)
+
 下载解压后的目录结构是这样的：
+> 务必记住你解压的地方，因为你以后需要用到它！
+> 不管任何东西都不推荐放在C盘
 
-![](../images/vhe_toolkit_folder.png)
+![](../images/TB_toolkit.png)
 
-其中“地图制作Hammer3.5.exe“就是主要的制图工具。
+其中`Trenchbroom`文件夹中的`Trenchbroom.exe`就是主要的制图工具
 
-## 配置hammer
-- 打开“地图制作Hammer3.5.exe“，你可以看到这样的界面
-	- ![](../images/hammer_layout.png)
-- 在正式开始做图之前，需要先配置hammer，一共要配置的有：
-	- wad纹理：地图场景要用到的贴图纹理，**至少要添加一个**
-	- fgd：全称是Forge Game Data，它包含了CS全部实体的信息，**必须配置，否则实体列表是空的**
-	- 编译程序：hammer里制作的地图是地图源文件（rmf或map格式），需要编译程序生成bsp才能在CS里游玩
+## 配置Trenchbroom
+- 如果是你第一次打开Trenchbroom，你会看到这样的界面
 
-- 首先点击菜单栏的“工具"→”参数设置“，会弹出如下窗口
-	- ![](../images/hammer_setting.png)
+	![](../images/TB_firstinit.png)
+
+- 不要担心，这是正常的，因为这是第一次使用Trenchbroom，需要进行一些配置
+- 然后，点击"OK"，会弹出如下窗口
+
+	![](../images/TB_init_layout.png)
+
+	这个界面是主题的主题取决于系统，如果你更喜欢深色主题，后面有设置的方法
+
+> 在初始设置时，你可能会看到自动更新选项。建议关闭此功能，因为自动更新会下载英文版本，而且当前汉化版本已经包含了所有必要的功能和优化。
+
+- 在正式开始做图之前，需要先配置Trenchbroom:
+	
+- 首先点击`New Map`->`打开首选项`，会弹出如下窗口
+
+	![](../images/TB_init_Perference.png)
+	![](../images/TB_init_Perference_2.png)
+
+	- 这里我们选择**Half-Life**，因为**CS1.6**是**半条命**的分支，所以选择它
+       
+根据图片所示，我们继续配置游戏路径和编译工具：
+
+- 选择Half-Life后，我们需要配置以下内容：
+  1. **游戏路径**：点击"游戏路径"右侧的"..."按钮，选择你的Half-Life游戏目录（如图片所示：D:\steam\steamapps\common\Half-Life）
+  2. **编译工具**：在下方的编译工具部分，需要设置以下几个程序：
+     - csg：选择`hlcsg_x64.exe`的路径
+     - bsp：选择`hlbsp_x64.exe`的路径
+     - vis：选择`hlvis_x64.exe`的路径
+     - rad：选择`hlrad_x64.exe`的路径
+
+	![](../images/Toolkit_pack01.png)
+
+> 注意：这些编译工具都在我们之前下载的工具包的tools/Compiler文件夹中
+
+> CS1.6的FGD我已经在配置文件设置好了，所以不需要再配置。
+> 如果你想使用自己的FGD,可以去`TrenchBroom\games\Halflife`配置，本文不做介绍
+
+配置完成后，点击"确定"保存设置。这样我们就完成了游戏路径和编译工具的基本配置，可以开始制作地图了
+        
+- **点击Half-Life，格式为Valve，再点击OK**
+
+	![](../images/TB_init_Perference_3.png)
+
+- 然后你就会看到这样的界面
+
+	![](../images/TB_main_layout.png)
+
 - **配置wad纹理**：选择“纹理”选项卡，点击“添加”来添加纹理
 	- 一般会选择halflife.wad（在CS主目录的valve文件夹里，它包含了半条命1使用的很多纹理）和zhlt.wad（在工具包的tools文件夹里，包含了一些特殊纹理）
 	- ![](../images/hammer_setting_wad.png)
