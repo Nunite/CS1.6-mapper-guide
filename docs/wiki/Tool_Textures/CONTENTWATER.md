@@ -3,11 +3,11 @@
 
 [✔️ 下载示例文件](https://twhl.info/vault/view/6374)
 
-![用户发布的图像](https://twhl.info/wiki/embed/CONTENTWATER)
+![用户发布的图像](../../images/tool_textures/CONTENTWATER.png)
 
 `CONTENTWATER`工具纹理移除刷子的碰撞并将表面内外翻转。`CONTENTWATER`不应用于世界刷子，因为它会将刷子标记为水体积，这会导致那些浸入其中的人出现可见性错误。
 
-![使用CONTENTWATER纹理的func_illusionary上的镜像表面](https://twhl.info/wiki/embed/contentwater_illusionary)
+![使用CONTENTWATER纹理的func_illusionary上的镜像表面](../../images/tool_textures/contentwater_illusionary.png)
 
 ## 实用应用
 
@@ -35,3 +35,5 @@
 * [SKIP](https://twhl.info/wiki/page/SKIP)
 
 [HINT](https://twhl.info/wiki/page/HINT)和`SOLIDHINT`工具纹理不会导致错误，但它们不应与`CONTENTWATER`一起使用。
+
+[来源：TWHL Wiki](https://twhl.info/wiki/page/CONTENTWATER)

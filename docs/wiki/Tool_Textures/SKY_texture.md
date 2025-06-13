@@ -1,6 +1,6 @@
 # SKY 纹理
 
-![halflife.wad的SKY纹理。在关卡编辑器中可见但在游戏中不可见](https://twhl.info/wiki/embed/sky)
+![halflife.wad的SKY纹理。在关卡编辑器中可见但在游戏中不可见](../../images/tool_textures/sky.png)
 
 **SKY** 是一种用于放置天空盒的工具纹理。在关卡中，任何应用了此纹理的刷子表面都会被天空盒渲染替代。
 
@@ -8,7 +8,7 @@
 
 ## 使用`SKY`纹理
 
-![Hammer中的应用当前纹理图标](https://twhl.info/wiki/embed/hamtut-ico-app)
+![Hammer中的应用当前纹理图标](../../images/tool_textures/hamtut-ico-app.png)
 
 SKY纹理必须应用于可见的表面，而其余部分可以使用NULL纹理。SKY纹理必须应用于天空刷子的所有表面，否则在较新版本的VHLT的HLRAD.exe中会导致天空光照问题。要做到这一点，选择天空刷子并使用**应用当前纹理**工具，选中`SKY`纹理。
 
@@ -35,3 +35,5 @@ VHLT还会在SKY刷子上自动生成剪裁节点，效果与[CLIP](https://twhl
 ## `SKY`和光照
 
 `SKY`纹理的表面可以通过[light_environment](https://twhl.info/wiki/page/light_environment)或[light_spot](https://twhl.info/wiki/page/light_spot)实体发光。`SKY`发出的光线很特别，因为光线是定向和平行的，不像普通的[纹理光照](https://twhl.info/wiki/page/texture_light)，模拟无限远处的光源（例如太阳）。一个重要注意事项是，方向由俯仰角(Pitch)和偏航角(Yaw)控制，这两个值都需要正确设置以指向_向下_。有关更多信息，请参阅链接页面。
+
+[来源：TWHL Wiki](https://twhl.info/wiki/page/SKY_texture)

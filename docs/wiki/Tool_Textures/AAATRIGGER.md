@@ -1,8 +1,8 @@
 # AAATRIGGER
 
-- 标准版本 ![标准版本](https://twhl.info/wiki/embed/AAATRIGGER)
+- 标准版本 ![标准版本](../../images/tool_textures/AAATRIGGER.png)
 
-- 旧版本 ![旧版本](https://twhl.info/wiki/embed/AAATRIGGER_gaben)
+- 旧版本 ![旧版本](../../images/tool_textures/AAATRIGGER_gaben.png)
 
 **AAATRIGGER**是一种小型但易于识别的[工具纹理](wiki/Tool_Textures/Tool_Textures)，地图制作者用它来帮助识别编辑中的触发刷子实体。它不应该用于常规的世界刷子，因为有时会导致游戏崩溃等问题；所以它必须用于在游戏中不可见的实体，如触发器。
 
@@ -14,3 +14,5 @@
 
 * 有一个较旧版本的AAATRIGGER，是Gabe Newell面部的低分辨率裁剪，在Half-Life的一些BSP和_xeno.wad_中发现。这里提及是为了澄清关于Half-Life中所谓"怪物盒"中"gaben脸"纹理性质的民间传说。
   * 具体来说，怪物盒是一种古老的Quake技术，用于通过传送门将怪物稍后生成到关卡中，这是因为在地图开发的那个阶段[monstermaker](https://twhl.info/wiki/page/monstermaker)尚未添加到游戏中，或者为了将TriggerTargets绑定到特定怪物，这无法对monstermaker或其子项进行。
+
+[来源：TWHL Wiki](https://twhl.info/wiki/page/AAATRIGGER)

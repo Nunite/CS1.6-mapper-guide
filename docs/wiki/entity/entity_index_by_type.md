@@ -81,6 +81,7 @@
 - [func_button](wiki/entity/func_button) : 可破碎的物体
 - [func_buyzone](wiki/entity/func_buyzone) : 购买区域
 - [func_conveyor](wiki/entity/func_conveyor) : 传送带
+- [func_detail](wiki/entity/func_detail) : 高精度Brush
 - [func_door](wiki/entity/func_door) : 推拉门（平移着打开、关闭的门）
 - [func_door_rotating](wiki/entity/func_door_rotating) : 转门（旋转打开、关闭的门）
 - [func_escapezone](wiki/entity/func_escapezone) : T逃脱区域

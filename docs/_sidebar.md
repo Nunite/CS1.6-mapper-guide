@@ -15,6 +15,12 @@
     - [未完待续...](tutorial/to_be_continue)
 
 ---
+
+- **进阶教程**
+    - [前言](tutorial/Advanced_Mapping/Advanced_Mapping)
+    - [高级地形制作](tutorial/Advanced_Mapping/Advanced_Terrain_Creation)
+---
+
 - **百科**
     - [基本概念](not_finished)
         - [金源引擎](not_finished)
@@ -28,6 +34,8 @@
         - [辅助工具](not_finished)
     - [引擎基础](not_finished)
         - [AllocBlock](wiki/engine/AllocBlock)
+        - [func_detail详细解析](wiki/engine/func_detail.md)
+        - [Hull](wiki/engine/Hull)
     - [工具纹理](wiki/Tool_Textures/Tool_Textures)
         - [AAATRIGGER](wiki/Tool_Textures/AAATRIGGER)
         - [BEVEL](wiki/Tool_Textures/BEVEL)
@@ -135,6 +143,7 @@
                 - [func_button](wiki/entity/func_button)
                 - [func_buyzone](wiki/entity/func_buyzone)
                 - [func_conveyor](wiki/entity/func_conveyor)
+                - [func_detail](wiki/entity/func_detail)
                 - [func_door](wiki/entity/func_door)
                 - [func_door_rotating](wiki/entity/func_door_rotating)
                 - [func_escapezone](wiki/entity/func_escapezone)

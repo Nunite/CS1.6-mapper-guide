@@ -12,3 +12,5 @@
 在这些页面中可以找到有关`SOLIDHINT`应用的更多信息:
 * [教程: 高级地形创建](https://twhl.info/wiki/page/Tutorial:_Advanced_Terrain_Creation)
 * [教程: 完全地图优化，第5.2节](https://twhl.info/wiki/page/Tutorial:_Total_Map_Optimisation_Part_3_(wpoly,_clipnodes,_engine_limits,_compile_parameters)#5.2_SOLIDHINT)
+
+[来源：TWHL Wiki](https://twhl.info/wiki/page/SOLIDHINT)

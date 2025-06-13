@@ -11,7 +11,7 @@
 * [func_plat](https://twhl.info/wiki/page/func_plat)的行程高度默认为包围盒的高度。它创建的触发字段也将其水平尺寸基于包围盒。
 * [func_pushable](https://twhl.info/wiki/page/func_pushable)的碰撞由包围盒定义，而不是其单独的刷子工作（尽管在大多数情况下它们是一致的）。
 
-![用户发布的图像](https://twhl.info/wiki/embed/BOUNDINGBOX)
+![用户发布的图像](../../images/tool_textures/BOUNDINGBOX.png)
 
 `BOUNDINGBOX` [工具纹理](https://twhl.info/wiki/page/tool_textures)允许您为实体设置自定义包围盒。一些巧妙的用例：
 * 需要与实体部分一起移动的[func_door](https://twhl.info/wiki/page/func_door)的玻璃部分可以通过拥有与实体门同宽的`BOUNDINGBOX`刷子来具有相同的lip值。
@@ -22,3 +22,5 @@
 ## 相关链接
 
 * [维基百科上的最小包围盒](https://en.wikipedia.org/wiki/Minimum_bounding_box)
+
+[来源：TWHL Wiki](https://twhl.info/wiki/page/bounding_box)

@@ -7,3 +7,5 @@
 此纹理可以在`zhlt.wad`中找到。
 
 有关其用法的更多信息，请参阅：[教程：模型和光照](https://twhl.info/wiki/page/Tutorial:_Models_and_lighting)
+
+[来源：TWHL Wiki](https://twhl.info/wiki/page/black_HIDDEND)
