@@ -4,11 +4,11 @@
 
 - 旧版本 ![旧版本](https://twhl.info/wiki/embed/AAATRIGGER_gaben)
 
-**AAATRIGGER**是一种小型但易于识别的[工具纹理](wiki/Tool_Textures/tool_textures)，地图制作者用它来帮助识别编辑中的触发刷子实体。它不应该用于常规的世界刷子，因为有时会导致游戏崩溃等问题；所以它必须用于在游戏中不可见的实体，如触发器。
+**AAATRIGGER**是一种小型但易于识别的[工具纹理](wiki/Tool_Textures/Tool_Textures)，地图制作者用它来帮助识别编辑中的触发刷子实体。它不应该用于常规的世界刷子，因为有时会导致游戏崩溃等问题；所以它必须用于在游戏中不可见的实体，如触发器。
 
 使用AAATRIGGER刷子来标识您的不可见触发器，如[trigger_teleport](https://twhl.info/wiki/page/trigger_teleport)、[trigger_once](https://twhl.info/wiki/page/trigger_once)和[trigger_multiple](https://twhl.info/wiki/page/trigger_multiple)。如果您将它用于[func_button](https://twhl.info/wiki/page/func_button)，那么纹理将被渲染，如上所述，这可能会导致问题。
 
-较新的编译器（如VHLT）会剥离使用AAATRIGGER的面的信息，使其在任何情况下都不可见，使其在视觉上类似于[NULL](https://twhl.info/wiki/page/NULL)。这作为副作用消除了崩溃问题。即使使用较旧的编译器，按照预期使用AAATRIGGER也比使用普通纹理更为推荐，因为编译器通常将AAATRIGGER纹理的面标记为特殊面，这些面不会消耗任何[AllocBlock](https://twhl.info/wiki/page/AllocBlock)资源。
+较新的编译器（如VHLT）会剥离使用AAATRIGGER的面的信息，使其在任何情况下都不可见，使其在视觉上类似于[NULL](wiki/Tool_Textures/NULL)。这作为副作用消除了崩溃问题。即使使用较旧的编译器，按照预期使用AAATRIGGER也比使用普通纹理更为推荐，因为编译器通常将AAATRIGGER纹理的面标记为特殊面，这些面不会消耗任何[AllocBlock](wiki/engine/AllocBlock)资源。
 
 ### 趣闻
 

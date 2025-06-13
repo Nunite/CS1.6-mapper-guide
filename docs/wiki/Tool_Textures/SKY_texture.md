@@ -28,7 +28,7 @@ VHLT还会在SKY刷子上自动生成剪裁节点，效果与[CLIP](https://twhl
 
 尽管名字如此，你不应该创建一个中空的天空盒然后将你的关卡放在其中。这种所谓的"天空盒"会使BSP膨胀并降低VISibility和wpoly计数方面的性能。
 
-![简化的示意图](https://twhl.info/uploads/images/7776/ee04387e-9e62-434c-af61-ad9be847101b.png)
+![简化的示意图](../../images/tool_textures/simple_sky_box.png)
 
 如果你这样做是为了修复[泄漏](https://twhl.info/wiki/page/leak)，请考虑[正确查找并修补这些泄漏](https://twhl.info/wiki/page/Tutorial:_How_to_fix_those_leaks)。
 

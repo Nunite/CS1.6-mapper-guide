@@ -26,6 +26,8 @@
         - [纹理](not_finished)
         - [模型和图标](not_finished)
         - [辅助工具](not_finished)
+    - [引擎基础](not_finished)
+        - [AllocBlock](wiki/engine/AllocBlock)
     - [工具纹理](wiki/Tool_Textures/Tool_Textures)
         - [AAATRIGGER](wiki/Tool_Textures/AAATRIGGER)
         - [BEVEL](wiki/Tool_Textures/BEVEL)
