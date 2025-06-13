@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="ai-assistant.css">
   <link rel="stylesheet" href="libs/docsify-darklight-theme/style.min.css">
   <link rel="stylesheet" href="custom-theme.css">
+  <link rel="icon" href="./resources/icon.svg" type="image/svg+xml">
   <style>
     /* 本地字体 */
     @font-face {
@@ -97,10 +98,13 @@
         crossChapter: false,
         crossChapterText: true,
       },
+      // 侧边栏折叠配置
+      sidebarDisplayLevel: 1, // 设置默认折叠的层级
       alias: {
         '/tutorial/_sidebar.md': '/_sidebar.md',
         '/wiki/_sidebar.md': '/_sidebar.md',
         '/wiki/entity/_sidebar.md': '/_sidebar.md',
+        '/wiki/bspguy/_sidebar.md': '/_sidebar.md',
       },
       // docsify-darklight-theme 配置
       darklightTheme: {
@@ -143,6 +147,10 @@
   <script src="libs/highlight.js/11.7.0/lib/common.min.js"></script>
   <link rel="stylesheet" href="libs/highlight.js/11.7.0/styles/github.min.css">
   <script src="libs/docsify-darklight-theme/index.min.js"></script>
+  
+  <!-- 侧边栏折叠插件 -->
+  <script src="https://unpkg.com/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/docsify-sidebar-collapse/dist/sidebar.min.css" />
 
   <!-- AI助手悬浮按钮 -->
   <div id="ai-float-btn" class="ai-fab" title="AI助手" onclick="toggleChat()">

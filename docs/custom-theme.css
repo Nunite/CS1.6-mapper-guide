@@ -20,6 +20,35 @@
   --light-borderColor: rgba(0, 0, 0, 0.07); /* 边框颜色 */
 }
 
+
+/* .sidebar ul li a {
+  font-size: 18px; /* 可以根据需要调整大小 */
+}
+
+.sidebar ul li.collapse ul li a {
+  font-size: 22px; /* 二级菜单字体大小 */
+}
+
+.sidebar ul li.collapse ul li ul li a {
+  font-size: 20px; /* 三级菜单字体大小 */
+}
+
+/* 侧边栏标题加粗 */
+.sidebar ul li.collapse > a {
+  font-weight: bold;
+}
+
+/* 调整侧边栏整体宽度 */
+.sidebar {
+  width: 280px; /* 可以根据需要调整宽度 */
+}
+
+/* 相应调整内容区域的左边距 */
+.content {
+  left: 280px; /* 保持与侧边栏宽度一致 */
+} 
+*/
+
 /* 自定义暗色模式下的其他样式 */
 body[data-theme="dark"] .sidebar {
   background-color: var(--dark-background);
